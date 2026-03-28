@@ -54,7 +54,7 @@ class HelloAgentsLLM:
         self,
         messages: List[Dict[str, str]],
         temperature: float = 0.7,
-        max_tokens: int = 2000,
+        max_tokens: int = 5000,
         stream: bool = True
     ) -> str:
         """
@@ -74,7 +74,7 @@ class HelloAgentsLLM:
 
             if stream:
                 # 流式调用
-                print("开始流式调用...")
+                # print("开始流式调用...")
                 stream_response = self.client.chat.completions.create(
                     model=self.model,
                     messages=messages,
@@ -87,11 +87,11 @@ class HelloAgentsLLM:
                 for chunk in stream_response:
                     if chunk.choices and chunk.choices[0].delta.content:
                         chunk_content = chunk.choices[0].delta.content
-                        print(chunk_content, end="", flush=True)
+                        # print(chunk_content, end="", flush=True)
                         response_content += chunk_content
 
-                print()  # 换行
-                print("流式调用完成")
+                # print()  # 换行
+                # print("流式调用完成")
             else:
                 # 非流式调用
                 print("开始非流式调用...")
@@ -112,39 +112,12 @@ class HelloAgentsLLM:
             print(f"调用大模型时出错: {e}", file=sys.stderr)
             raise
 
-    def get_config(self) -> Dict[str, Any]:
-        """获取当前配置"""
-        return {
-            "base_url": self.base_url,
-            "model": self.model,
-            "timeout": self.timeout,
-            "api_key": self.api_key[:10] + "..." if self.api_key else None  # 部分隐藏API密钥
-        }
-
-
-def main():
-    """示例用法"""
-    # 从环境变量初始化
-    llm = HelloAgentsLLM()
-
-    # 显示配置
-    config = llm.get_config()
-    print("当前配置:", config)
-
-    # 测试调用
-    messages = [
-        {"role": "user", "content": "请用中文回答：什么是人工智能？"}
-    ]
-
-    try:
-        response = llm.think(messages, temperature=0.7, max_tokens=500)
-        print("\n完整响应:")
-        print("-" * 50)
-        print(response)
-        print("-" * 50)
-    except Exception as e:
-        print(f"测试失败: {e}")
-
 
 if __name__ == "__main__":
-    main()
+    client = HelloAgentsLLM()
+    exampleMessages = [
+        {"role": "system", "content": "You are a helpful assistant that writes Python code."},
+        {"role": "user", "content": "写一个快速排序算法"}
+    ]
+    response = client.think(exampleMessages)
+    print(response)
